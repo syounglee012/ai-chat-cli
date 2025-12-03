@@ -15,14 +15,17 @@ def simple_chat(history: list, message: str) -> str:
         stream=True
     )
 
+    print("\n-> ", end="", flush=True)
+
     assistant_message = ""
     for chunk in response:
         content = chunk.choices[0].delta.content
         if content:
             print(content, end="", flush=True)
             assistant_message += content
-    print()
     
+    print()
+
     if assistant_message:
         history.append({"role": "assistant", "content": assistant_message})
     
@@ -35,7 +38,7 @@ def main():
     max_history = 10
 
     while True:
-        message = session.prompt("You: ").strip()
+        message = session.prompt("\nYou: " if history else "You: ").strip()
 
         if message.lower() == "q":
             break
