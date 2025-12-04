@@ -37,19 +37,28 @@ def main():
     history = []
     max_history = 10
 
-    while True:
-        message = session.prompt("\nYou: " if history else "You: ").strip()
+    try:
+        while True:  
+            message = session.prompt("\nYou: " if history else "You: ").strip()
 
-        if message.lower() == "q":
-            break
+            if message.lower() == "q":
+                print("\nGoodbye!")
+                break
 
-        if not message:
-            continue
+            if not message:
+                continue
 
-        simple_chat(history,message)
+            simple_chat(history, message)
 
-        if len(history) > max_history:
-            history = history[-max_history:]
+            if len(history) > max_history:
+                history = history[-max_history:]  
+                
+    except KeyboardInterrupt:
+        print("\nGoodbye!")
+        return
+    except EOFError:
+        print("\nGoodbye!")
+        return
    
 if __name__ == "__main__":
     main()
