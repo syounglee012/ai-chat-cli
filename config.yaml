@@ -1,0 +1,16 @@
+# AI Chat CLI Configuration
+
+models:
+  available:
+    - claude-sonnet-4
+    - claude-3-5-haiku
+    - gpt-4o
+    - gpt-4o-mini
+  default: gpt-4o-mini
+
+aws:
+  region: us-west-2
+
+memory:
+  # Number of previous messages to include in context
+  history_limit: 20

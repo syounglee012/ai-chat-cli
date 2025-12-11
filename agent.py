@@ -4,6 +4,7 @@ import json
 import uuid
 from datetime import datetime, timezone
 import boto3
+from config import get_aws_region, get_history_limit
 
 # AgentCore clients
 _client = None
@@ -12,13 +13,13 @@ _sts_client = None
 def _get_client():
     global _client
     if _client is None:
-        _client = boto3.client('bedrock-agentcore', region_name='us-west-2')
+        _client = boto3.client('bedrock-agentcore', region_name=get_aws_region())
     return _client
 
 def _get_sts_client():
     global _sts_client
     if _sts_client is None:
-        _sts_client = boto3.client('sts', region_name='us-west-2')
+        _sts_client = boto3.client('sts', region_name=get_aws_region())
     return _sts_client
 
 
@@ -116,7 +117,7 @@ class AgentClient:
             return message
         
         conversation = ""
-        for entry in history[-20:]:
+        for entry in history[-get_history_limit():]:
             role = entry.get('role', 'unknown').lower()
             content = entry.get('content', '')
             if role == 'user':

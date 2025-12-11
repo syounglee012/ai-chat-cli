@@ -1,7 +1,7 @@
 .PHONY: test install run
 
 test:
-	@source venv/bin/activate && pytest test_agent.py -v
+	@source venv/bin/activate && pytest test_*.py -v
 
 install:
 	@python3 -m venv venv

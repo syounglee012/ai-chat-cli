@@ -2,20 +2,15 @@ import os
 from dotenv import load_dotenv
 from prompt_toolkit import PromptSession
 from agent import AgentClient
+from config import get_available_models, get_default_model
 
 load_dotenv()
 
 AGENT_RUNTIME_ARN = os.getenv("AGENT_RUNTIME_ARN")
 MEMORY_ARN = os.getenv("MEMORY_ARN")
 
-AVAILABLE_MODELS = [
-    "claude-sonnet-4",
-    "claude-3-5-haiku",
-    "gpt-4o",
-    "gpt-4o-mini",
-]
-
-DEFAULT_MODEL = "gpt-4o-mini"
+AVAILABLE_MODELS = get_available_models()
+DEFAULT_MODEL = get_default_model()
 
 
 def main():

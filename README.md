@@ -54,12 +54,25 @@ make test
 | `/m` or `/models` | Select a different model (1-4) |
 | `q` | Quit |
 
-### Available Models
+## Configuration
 
-1. `claude-sonnet-4`
-2. `claude-3-5-haiku`
-3. `gpt-4o`
-4. `gpt-4o-mini` (default)
+Customize settings in `config.yaml`:
+
+```yaml
+models:
+  available:
+    - claude-sonnet-4
+    - claude-3-5-haiku
+    - gpt-4o
+    - gpt-4o-mini
+  default: gpt-4o-mini
+
+aws:
+  region: us-west-2
+
+memory:
+  history_limit: 20  # Messages to include in context
+```
 
 ## Requirements
 
@@ -72,4 +85,5 @@ make test
 - `boto3>=1.35.0` - AWS SDK
 - `python-dotenv>=1.2.0` - Environment variable management
 - `prompt-toolkit>=3.0.0` - Enhanced terminal interface
+- `pyyaml>=6.0.0` - YAML configuration
 - `pytest>=8.0.0` - Testing framework
