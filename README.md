@@ -9,15 +9,6 @@ A command-line interface for chatting with multiple LLM models via AWS Bedrock A
 - **Session-based**: Conversations persist across app restarts
 - **AWS SSO Integration**: Automatic login handling
 
-## Architecture
-
-```
-┌──────────────┐     ┌─────────────────────┐     ┌─────────────────┐
-│  Python CLI  │────▶│  AWS AgentCore      │────▶│  RubyLLM Agent  │
-│              │     │  Memory (Events)    │     │  (Claude/GPT)   │
-└──────────────┘     └─────────────────────┘     └─────────────────┘
-```
-
 ## Setup
 
 1. Clone the repository:
