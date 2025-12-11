@@ -1,5 +1,10 @@
 #!/bin/bash
 
+# Check if already logged in, skip SSO login if so
+if ! aws sts get-caller-identity &>/dev/null; then
+    aws sso login
+fi
+
 # Save current directory
 ORIGINAL_DIR=$(pwd)
 

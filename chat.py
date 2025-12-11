@@ -1,45 +1,46 @@
 import os
 from dotenv import load_dotenv
-from openai import OpenAI
 from prompt_toolkit import PromptSession
+from agent import AgentClient
 
 load_dotenv()
 
-client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
+AGENT_RUNTIME_ARN = os.getenv("AGENT_RUNTIME_ARN")
+MEMORY_ARN = os.getenv("MEMORY_ARN")
 
-def simple_chat(history: list, message: str) -> str:
-    history.append({"role": "user", "content": message})
-    response = client.chat.completions.create(
-        model="gpt-4o-mini", 
-        messages=history,
-        stream=True
-    )
+AVAILABLE_MODELS = [
+    "claude-sonnet-4",
+    "claude-3-5-haiku",
+    "gpt-4o",
+    "gpt-4o-mini",
+]
 
-    print("\n-> ", end="", flush=True)
-
-    assistant_message = ""
-    for chunk in response:
-        content = chunk.choices[0].delta.content
-        if content:
-            print(content, end="", flush=True)
-            assistant_message += content
-    
-    print()
-
-    if assistant_message:
-        history.append({"role": "assistant", "content": assistant_message})
-    
-    return assistant_message
+DEFAULT_MODEL = "gpt-4o-mini"
 
 
 def main():
+    if not AGENT_RUNTIME_ARN:
+        print("Error: AGENT_RUNTIME_ARN environment variable is not set.")
+        return
+    
+    if not MEMORY_ARN:
+        print("Warning: MEMORY_ARN not set. Conversation history will not persist.")
+
+    # Initialize agent client
+    agent = AgentClient(AGENT_RUNTIME_ARN, MEMORY_ARN)
+    
     session = PromptSession()
-    history = []
-    max_history = 10
+    current_model = DEFAULT_MODEL
+    session_id = agent.get_session_id()
+
+    print("Commands:")
+    print("  /models or /m  - List and select models (1-4)")
+    print("  q              - Quit")
 
     try:
         while True:  
-            message = session.prompt("\nYou: " if history else "You: ").strip()
+            prompt_text = f"\n[{current_model}] You: "
+            message = session.prompt(prompt_text).strip()
 
             if message.lower() == "q":
                 print("\nGoodbye!")
@@ -48,18 +49,32 @@ def main():
             if not message:
                 continue
 
-            simple_chat(history, message)
+            # Handle /models or /m command
+            if message in ["/models", "/m"]:
+                print("Available models:")
+                for i, m in enumerate(AVAILABLE_MODELS, 1):
+                    marker = " (current)" if m == current_model else ""
+                    print(f"  {i}. {m}{marker}")
+                print("\nEnter number to select: ", end="", flush=True)
+                try:
+                    choice = session.prompt("").strip()
+                    if choice.isdigit():
+                        idx = int(choice) - 1
+                        if 0 <= idx < len(AVAILABLE_MODELS):
+                            current_model = AVAILABLE_MODELS[idx]
+                            print(f"Model changed to {current_model}.")
+                        else:
+                            print("Invalid selection.")
+                except (KeyboardInterrupt, EOFError):
+                    pass
+                continue
 
-            if len(history) > max_history:
-                history = history[-max_history:]  
+            agent.chat(message, session_id, current_model)
                 
     except KeyboardInterrupt:
         print("\nGoodbye!")
-        return
     except EOFError:
         print("\nGoodbye!")
-        return
    
 if __name__ == "__main__":
     main()
-
